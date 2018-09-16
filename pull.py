@@ -17,7 +17,7 @@ def get_endpoint(fitbit, url, filename, headers):
 def authorize(client_id, client, scope=None):
     fitbit = OAuth2Session(client_id, client=client, scope=scope)
     auth_url = "https://www.fitbit.com/oauth2/authorize"
-    auth_url, state = fitbit.authorization_url(auth_url, expires_in=31536000)
+    auth_url, state = fitbit.authorization_url(auth_url, expires_in=31536000) # CAUTION, expire_in should be set carefully.  Consider using a different auth flow instead of a long duration.
     print("Visit this url to authorize: {}".format(auth_url))
     callback_url = input("Please paste the URL you were redirected to here: ")
     result=fitbit.token_from_fragment(callback_url)

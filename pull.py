@@ -17,25 +17,33 @@ def get_endpoint(fitbit, url, filename, headers):
 def authorize(client_id, client, scope=None):
     fitbit = OAuth2Session(client_id, client=client, scope=scope)
     auth_url = "https://www.fitbit.com/oauth2/authorize"
-    auth_url, state = fitbit.authorization_url(auth_url)
+    auth_url, state = fitbit.authorization_url(auth_url, expires_in=31536000)
     print("Visit this url to authorize: {}".format(auth_url))
     callback_url = input("Please paste the URL you were redirected to here: ")
     result=fitbit.token_from_fragment(callback_url)
     token = result["access_token"]
     print("Please use this in the future!  Token={}".format(token))
+   
+    token_saver(result)
 
+    return fitbit
+
+
+def token_saver(token):
+    output = json.dumps(token, indent=4, sort_keys=True)
     fh = open("token.txt", "w")
-    fh.write(str(token) + "\n")
+    fh.write(str(output) + "\n")
     fh.close()
     
-    return fitbit
+
 
 def get_token_from_file():
     fh = open("token.txt", "r")
     content = fh.read()
     fh.close()
     result = content.strip()
-    return result
+    obj = json.loads(result)
+    return obj["access_token"]
     
 
 

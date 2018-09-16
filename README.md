@@ -1,2 +1,4 @@
 # pullfitbit
-Utilities that allow you to pull your own fitbit data.
+======
+## Purpose
+The purpose of this application is to allow you to pull down your fitbit data with little to no effort.

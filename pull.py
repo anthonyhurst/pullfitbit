@@ -82,4 +82,6 @@ if __name__ == "__main__":
 
     get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", "weight.json", headers=headers)
     get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", "steps.json", headers=headers) # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/heart/date/{DATE}/1d/1sec.json", "heart.json", headers=headers) # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, "https://api.fitbit.com/1.2/user/-/sleep/date/{DATE}.json", "sleep.json", headers=headers) 
 

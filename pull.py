@@ -5,27 +5,16 @@ import argparse
 import datetime
 import json
 
-parser = argparse.ArgumentParser(description="Pull your data from fitbit")
-parser.add_argument('client_id', help='Supply the client_id of the application.')
-parser.add_argument('--token', default=None, help='If you already have a token, supply it here.')
-args = parser.parse_args()
+def get_endpoint(fitbit, url, filename, headers):
+    date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    result = fitbit.get(url.format(DATE=date_str), headers=headers)
+    json_result = json.loads(result.content)
+    output = json.dumps(json_result, indent=4, sort_keys=True)
+    fh = open(filename, "w")
+    fh.write(output + "\n")
+    fh.close()
 
-client_id = args.client_id
-
-scope = [
-        "activity",
-        "weight",
-        "heartrate",
-        "nutrition",
-        "sleep",
-        ]
-
-headers = {
-        "Accept-Language": "en_US",
-        }
-
-client = MobileApplicationClient(client_id)
-if args.token is None:
+def authorize(client_id, client, scope=None):
     fitbit = OAuth2Session(client_id, client=client, scope=scope)
     auth_url = "https://www.fitbit.com/oauth2/authorize"
     auth_url, state = fitbit.authorization_url(auth_url)
@@ -35,30 +24,62 @@ if args.token is None:
     token = result["access_token"]
     print("Please use this in the future!  Token={}".format(token))
 
-
     fh = open("token.txt", "w")
     fh.write(str(token) + "\n")
     fh.close()
+    
+    return fitbit
 
-else:
-    token = {
-            "access_token": args.token,
-            "token_type": "Bearer",
+def get_token_from_file():
+    fh = open("token.txt", "r")
+    content = fh.read()
+    fh.close()
+    result = content.strip()
+    return result
+    
+
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Pull your data from fitbit")
+    parser.add_argument("client_id", help="Supply the client_id of the application.")
+    parser.add_argument("--token", default=None, help="If you already have a token, supply it here.")
+    parser.add_argument("--use_token_file", default=False, action="store_true", help="If you already have a token, supply it here.")
+    args = parser.parse_args()
+
+    client_id = args.client_id
+
+    scope = [
+            "activity",
+            "weight",
+            "heartrate",
+            "nutrition",
+            "sleep",
+            ]
+
+    headers = {
+            "Accept-Language": "en_US",
             }
-    fitbit = OAuth2Session(client_id, client=client, scope=scope, token=token)
+
+    client = MobileApplicationClient(client_id)
+    if args.token is None and not args.use_token_file:
+        fitbit = authorize(client_id, client, scope)
+    else:
+        if args.token is not None:
+            token = {
+                    "access_token": args.token,
+                    "token_type": "Bearer",
+                    }
+        else:
+            token = {
+                    "access_token": get_token_from_file(),
+                    "token_type": "Bearer",
+                    }
+        fitbit = OAuth2Session(client_id, client=client, scope=scope, token=token)
 
 
 
-date_str = datetime.datetime.now().strftime("%Y-%m-%d")
 
-weight_result = fitbit.get("https://api.fitbit.com/1/user/-/body/log/weight/date/{}/1m.json".format(date_str), headers=headers)
-
-json_result = json.loads(weight_result.content)
-output = json.dumps(json_result, indent=4, sort_keys=True)
-
-
-
-fh = open("weight.json", "w")
-fh.write(str(output) + "\n")
-fh.close()
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", "weight.json", headers=headers)
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", "steps.json", headers=headers) # note that the detail level only works for Personal OAuth or Fitbit approved apps
 

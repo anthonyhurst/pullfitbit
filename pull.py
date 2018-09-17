@@ -117,4 +117,14 @@ if __name__ == "__main__":
                 "sleep.json", 
                 headers=headers, 
                 yesterday=args.yesterday) 
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1/user/-/foods/log/date/{DATE}.json", 
+                "foods.json", 
+                headers=headers, 
+                yesterday=args.yesterday) 
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1/user/-/foods/log/water/date/{DATE}.json", 
+                "water.json", 
+                headers=headers, 
+                yesterday=args.yesterday) 
 

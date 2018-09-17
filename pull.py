@@ -20,7 +20,9 @@ def get_endpoint(fitbit, url, filename, headers=None, yesterday=False):
 def authorize(client_id, client, scope=None):
     fitbit = OAuth2Session(client_id, client=client, scope=scope)
     auth_url = "https://www.fitbit.com/oauth2/authorize"
-    auth_url, state = fitbit.authorization_url(auth_url, expires_in=31536000) # CAUTION, expire_in should be set carefully.  Consider using a different auth flow instead of a long duration.
+    # CAUTION: expire_in should be set carefully.  Consider using a different 
+    # auth flow instead of a long duration.
+    auth_url, state = fitbit.authorization_url(auth_url, expires_in=31536000) 
     print("Visit this url to authorize: {}".format(auth_url))
     callback_url = input("Please paste the URL you were redirected to here: ")
     result=fitbit.token_from_fragment(callback_url)
@@ -92,8 +94,27 @@ if __name__ == "__main__":
 
 
 
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", "weight.json", headers=headers, yesterday=args.yesterday)
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", "steps.json", headers=headers, yesterday=args.yesterday) # note that the detail level only works for Personal OAuth or Fitbit approved apps
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/heart/date/{DATE}/1d/1sec.json", "heart.json", headers=headers, yesterday=args.yesterday) # note that the detail level only works for Personal OAuth or Fitbit approved apps
-    get_endpoint(fitbit, "https://api.fitbit.com/1.2/user/-/sleep/date/{DATE}.json", "sleep.json", headers=headers, yesterday=args.yesterday) 
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", 
+                "weight.json", 
+                headers=headers, 
+                yesterday=args.yesterday)
+
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", 
+                "steps.json", 
+                headers=headers, 
+                yesterday=args.yesterday) 
+                # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1/user/-/activities/heart/date/{DATE}/1d/1sec.json", 
+                "heart.json", 
+                headers=headers, 
+                yesterday=args.yesterday) 
+                # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, 
+                "https://api.fitbit.com/1.2/user/-/sleep/date/{DATE}.json", 
+                "sleep.json", 
+                headers=headers, 
+                yesterday=args.yesterday) 
 

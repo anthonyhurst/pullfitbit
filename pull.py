@@ -5,8 +5,11 @@ import argparse
 import datetime
 import json
 
-def get_endpoint(fitbit, url, filename, headers):
-    date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+def get_endpoint(fitbit, url, filename, headers=None, yesterday=False):
+    t = datetime.datetime.now()
+    if yesterday:
+        t = t - datetime.timedelta(days=1)
+    date_str = t.strftime("%Y-%m-%d")
     result = fitbit.get(url.format(DATE=date_str), headers=headers)
     json_result = json.loads(result.content)
     output = json.dumps(json_result, indent=4, sort_keys=True)
@@ -52,7 +55,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Pull your data from fitbit")
     parser.add_argument("client_id", help="Supply the client_id of the application.")
     parser.add_argument("--token", default=None, help="If you already have a token, supply it here.")
-    parser.add_argument("--use_token_file", default=False, action="store_true", help="If you already have a token, supply it here.")
+    parser.add_argument("--use_token_file", default=False, action="store_true", help="Read in the token from the previously stored file.")
+    parser.add_argument("--yesterday", default=False, action="store_true", help="Use yesterday's date instead of today.")
     args = parser.parse_args()
 
     client_id = args.client_id
@@ -88,8 +92,8 @@ if __name__ == "__main__":
 
 
 
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", "weight.json", headers=headers)
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", "steps.json", headers=headers) # note that the detail level only works for Personal OAuth or Fitbit approved apps
-    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/heart/date/{DATE}/1d/1sec.json", "heart.json", headers=headers) # note that the detail level only works for Personal OAuth or Fitbit approved apps
-    get_endpoint(fitbit, "https://api.fitbit.com/1.2/user/-/sleep/date/{DATE}.json", "sleep.json", headers=headers) 
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/body/log/weight/date/{DATE}/1m.json", "weight.json", headers=headers, yesterday=args.yesterday)
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/steps/date/{DATE}/1d/15min.json", "steps.json", headers=headers, yesterday=args.yesterday) # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, "https://api.fitbit.com/1/user/-/activities/heart/date/{DATE}/1d/1sec.json", "heart.json", headers=headers, yesterday=args.yesterday) # note that the detail level only works for Personal OAuth or Fitbit approved apps
+    get_endpoint(fitbit, "https://api.fitbit.com/1.2/user/-/sleep/date/{DATE}.json", "sleep.json", headers=headers, yesterday=args.yesterday) 
 

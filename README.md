@@ -8,13 +8,13 @@ You will likely need to install
 
 # Usage
 This is still a work in progress but to authorize:
-```
+```bash
 python3 pull.py $APPID
 ```
 You will then need to go through the prompts and instructions.
 
 Once you have a token you can then pull your data by running:
-```
-python3 pull.py --use_token_file
+```bash
+python3 pull.py $APPID --use_token_file
 ```
 

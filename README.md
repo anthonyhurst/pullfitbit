@@ -19,10 +19,10 @@ Once you have a token you can then pull your data by running:
 ```bash
 python3 pull.py $APPID --use_token_file
 ```
-If successful, you should then see _json_ files.
+If successful, you should then see __json__ files.
 
 Once you have data you can then graph by running:
 ```bash
 python3 graph.py
 ```
-If successful, you should then see _pdf_ files (plots).
+If successful, you should then see __pdf__ files (plots).
